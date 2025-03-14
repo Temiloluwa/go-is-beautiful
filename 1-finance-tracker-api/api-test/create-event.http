@@ -1,0 +1,9 @@
+POST http://localhost:8080/events
+content-type: application/json
+
+{
+    "name": "Temi",
+    "description": "developer",
+    "location": "berlin",
+    "datetime": "{{$datetime iso8601}}"
+}
