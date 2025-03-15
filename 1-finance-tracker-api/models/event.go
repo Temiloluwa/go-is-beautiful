@@ -1,8 +1,9 @@
 package models
 
 import (
-	"fmt"
 	"time"
+
+	"github.com/temiloluwa/1-finance-tracker-api/db"
 )
 
 type Event struct {
@@ -12,23 +13,73 @@ type Event struct {
 	Location    string    `binding:"required"`
 	DateTime    time.Time `binding:"required"`
 	UserId      int
-	Tags        []string // Mutable field (slice)
 }
 
-var events = []Event{}
+func (e *Event) Save() error {
+	query := `
+		INSERT INTO events (name, description, location, dateTime, user_id)
+		VALUES (?, ?, ?, ?, ?)
+	`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
 
-// Fix: Use a pointer receiver to modify the actual Event instance
-func (e *Event) Save() {
-	e.ID = len(events) + 1
-	e.UserId = len(events)
-	e.AddTag(fmt.Sprintf("event %d", len(events))) // Convert len(events) to a string properly
-	events = append(events, *e)                    // Store the dereferenced event
+	// Execute query with proper values
+	result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserId)
+	if err != nil {
+		return err
+	}
+
+	// Retrieve and set the last inserted ID
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	e.ID = int(id)
+
+	return nil
 }
 
-func (e *Event) AddTag(tag string) {
-	e.Tags = append(e.Tags, tag) // This now modifies the same instance
+func GetEventByID(id int) (*Event, error) {
+	query := "SELECT id, name, description, location, dateTime, user_id FROM events WHERE ID = ?"
+	// Execute query with proper values
+	row := db.DB.QueryRow(query, id)
+
+	var event Event
+	// Scan the result into the event struct
+	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserId)
+
+	if err != nil {
+		return nil, err
+	}
+	// Return the event
+	return &event, nil
 }
 
-func GetAllEvents() []Event {
-	return events
+func GetAllEvents() ([]Event, error) {
+	query := "SELECT id, name, description, location, dateTime, user_id FROM events"
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var events []Event
+	for rows.Next() {
+		var event Event
+		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserId)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+
+	// Check for errors from rows iteration
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }
