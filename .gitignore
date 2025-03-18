@@ -1,0 +1,38 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build artifacts
+*.out
+*.test
+*.a
+
+# Go modules
+vendor/
+go.sum
+go.work
+go.work.sum
+
+# Temporary files and caches
+*.log
+*.tmp
+*.swp
+*.swo
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# GoLand-specific files
+*.pb.go
+
+finance-tracker
+*.db
