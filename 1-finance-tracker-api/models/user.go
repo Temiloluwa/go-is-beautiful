@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/temiloluwa/1-finance-tracker-api/db"
 	hash "github.com/temiloluwa/1-finance-tracker-api/utils"
 )
@@ -42,4 +44,20 @@ func (u *User) Save() error {
 	userId, err := result.LastInsertId()
 	u.ID = int(userId)
 	return err
+}
+
+func (u *User) ValidateCredentials() error {
+	query := "SELECT id, password FROM users WHERE email = ?"
+	var retrievedPassword string
+	err := db.DB.QueryRow(query, u.Email).Scan(&u.ID, &retrievedPassword)
+	if err != nil {
+		return err
+	}
+	isValid := hash.CheckPasswordHash(retrievedPassword, u.GetPassword())
+
+	if !isValid {
+		return errors.New("invalid credentials")
+	}
+
+	return nil
 }
