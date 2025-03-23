@@ -3,8 +3,8 @@ package models
 import (
 	"errors"
 
-	"github.com/temiloluwa/1-finance-tracker-api/db"
-	hash "github.com/temiloluwa/1-finance-tracker-api/utils"
+	"github.com/temiloluwa/rsvp-api/db"
+	hash "github.com/temiloluwa/rsvp-api/utils"
 )
 
 type User struct {
@@ -60,4 +60,31 @@ func (u *User) ValidateCredentials() error {
 	}
 
 	return nil
+}
+
+func GetAllUsers() ([]User, error) {
+	query := "SELECT id, email, password FROM users"
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var users []User
+
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.ID, &user.Email, &user.Password)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

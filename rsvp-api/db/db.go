@@ -39,10 +39,22 @@ func createTables() {
 		description TEXT,
 		location TEXT,
 		dateTime DATETIME NOT NULL,
-		user_id INTEGER
+		user_id INTEGER NOT NULL,
+		FOREIGN KEY (user_id) REFERENCES users(id)
 	);
 	`
-	queries := []string{createUsersTable, createEventsTable}
+
+	createRegistrationsTable := `
+	CREATE TABLE IF NOT EXISTS registrations (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		event_id INTEGER NOT NULL,
+		user_id INTEGER NOT NULL,
+		FOREIGN KEY (event_id) REFERENCES events(id),
+		FOREIGN KEY (user_id) REFERENCES users(id),
+		UNIQUE(event_id, user_id)
+	);
+	`
+	queries := []string{createUsersTable, createEventsTable, createRegistrationsTable}
 
 	for _, query := range queries {
 		_, err := DB.Exec(query)

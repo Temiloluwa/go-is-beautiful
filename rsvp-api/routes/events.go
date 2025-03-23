@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/temiloluwa/1-finance-tracker-api/models"
+	"github.com/temiloluwa/rsvp-api/models"
 )
 
 func getEvent(c *gin.Context) {
@@ -34,13 +34,18 @@ func getEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, events)
 }
 
+// protected route
 func createEvent(c *gin.Context) {
+
 	var event models.Event
 	err := c.BindJSON(&event)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request"})
 		return
 	}
+
+	event.UserId = c.GetInt("userId")
 	err = event.Save()
 
 	if err != nil {
@@ -59,14 +64,19 @@ func updateEvent(c *gin.Context) {
 
 	}
 
-	_, err = models.GetEventByID(id)
+	userId := c.GetInt("userId")
+	event, err := models.GetEventByID(id)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Event not found"})
 		return
 	}
 
-	var event models.Event
+	if userId != event.UserId {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
 	err = c.BindJSON(&event)
 
 	if err != nil {
@@ -92,11 +102,17 @@ func deleteEvent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid event ID"})
 		return
 	}
-
+	userId := c.GetInt("userId")
 	event, err := models.GetEventByID(id)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Event not found"})
+		return
+	}
+
+	// user that created event must be the one to update it
+	if userId != event.UserId {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 

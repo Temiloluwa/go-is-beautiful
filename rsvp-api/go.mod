@@ -1,4 +1,4 @@
-module github.com/temiloluwa/1-finance-tracker-api
+module github.com/temiloluwa/rsvp-api
 
 go 1.23.5
 

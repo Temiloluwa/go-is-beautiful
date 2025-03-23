@@ -34,5 +34,5 @@ Thumbs.db
 # GoLand-specific files
 *.pb.go
 
-finance-tracker
+basic-rest
 *.db

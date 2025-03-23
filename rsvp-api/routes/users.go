@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/temiloluwa/1-finance-tracker-api/models"
-	"github.com/temiloluwa/1-finance-tracker-api/utils"
+	"github.com/temiloluwa/rsvp-api/models"
+	"github.com/temiloluwa/rsvp-api/utils"
 )
 
 func signup(c *gin.Context) {
@@ -50,4 +50,15 @@ func login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful.", "token": token})
+}
+
+func getUsers(c *gin.Context) {
+	users, err := models.GetAllUsers()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch users."})
+		return
+	}
+
+	c.JSON(http.StatusOK, users)
 }
