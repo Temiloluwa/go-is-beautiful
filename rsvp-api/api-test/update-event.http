@@ -1,0 +1,9 @@
+PUT http://localhost:8080/events/3
+content-type: application/json
+
+{
+    "name": "Titi",
+    "description": "cleaner",
+    "location": "belruit",
+    "datetime": "{{$datetime iso8601}}"
+}
