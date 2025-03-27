@@ -2,6 +2,7 @@ POST http://localhost:8080/signup
 Content-Type: application/json
 
 {
-    "email": "temmiecvml@gmail.com",
+    "name": "Bola",
+    "email": "bola@gmail.com",
     "password": "thepassword"
 }

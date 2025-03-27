@@ -9,6 +9,7 @@ import (
 
 type User struct {
 	ID       int
+	Name     string
 	Password string `binding:"required"`
 	Email    string `binding:"required"`
 }
@@ -26,7 +27,7 @@ func (u *User) GetEmail() string {
 }
 
 func (u *User) Save() error {
-	query := "INSERT INTO users(email, password) VALUES (?, ?)"
+	query := "INSERT INTO users(name, email, password) VALUES (?, ?, ?)"
 	stmt, err := db.DB.Prepare(query)
 
 	if err != nil {
@@ -35,7 +36,7 @@ func (u *User) Save() error {
 
 	defer stmt.Close()
 	u.Password, _ = hash.HashPassword(u.Password)
-	result, err := db.DB.Exec(query, u.Email, u.Password)
+	result, err := db.DB.Exec(query, u.Name, u.Email, u.Password)
 
 	if err != nil {
 		return err
