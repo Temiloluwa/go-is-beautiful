@@ -1,0 +1,10 @@
+POST http://localhost:8080/events
+content-type: application/json
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlbW1pZWN2bWxAZ21haWwuY29tIiwiZXhwIjoxNzQyNzUzNDI4LCJ1c2VySWQiOjF9.aoD7Kn9mTvVDYkeizQWFQG0-h0P-_dm_1E8P1JjJVPo
+
+{
+    "name": "Road Trip",
+    "description": "Come and start summer with us",
+    "location": "frankfurt",
+    "datetime": "{{$datetime iso8601}}"
+}
